@@ -33,7 +33,10 @@ Board board;
 PFont title_font;
 PFont score_font;
 Minim minim;
-AudioPlayer theme;
+//AudioPlayer theme;
+FilePlayer theme;
+TickRate theme_rate_control;
+AudioOutput out;
 // clearing sounds
 AudioPlayer tetris;
 AudioPlayer line_clear;
@@ -49,7 +52,10 @@ void setup() {
   frameRate(60);
   
   minim = new Minim(this);
-  theme = minim.loadFile("theme.wav");
+  theme = new FilePlayer(minim.loadFileStream("theme.wav"));
+  out = minim.getLineOut();
+  theme_rate_control = new TickRate(1.f);
+  theme.patch(theme_rate_control).patch(out);
   theme.loop();
   // clearing sounds
   tetris = minim.loadFile("tetris.wav");
@@ -118,4 +124,8 @@ void keyReleased() {
       board.reset_indices();
     }
   }
+}
+
+void stop() {
+  minim.stop();
 }

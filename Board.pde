@@ -6,7 +6,8 @@ class Board {
   boolean hold, justSwapped;
   game_mode gm;
   int score; 
-  int levels;
+  int level;
+  int totalLinesCleared;
   int tetromino_x, tetromino_y;
   
   boolean paused;
@@ -40,6 +41,8 @@ class Board {
       }
       // rotate by simpling swapping places with the tetromino
       active_tetromino = temp_tetromino;
+      move.rewind();
+      move.play();
     }
   }
   
@@ -177,6 +180,9 @@ class Board {
       line_clear.rewind();
       line_clear.play();
     }
+    
+    // Add number of lines cleared to total
+    totalLinesCleared += linesRemoved; //<>//
   }
   /**
      Helper function that returns the score.
@@ -186,6 +192,13 @@ class Board {
   }
   
   void update_board() {
+        
+    // update level counter
+    level = totalLinesCleared / 10;
+    
+    // Update theme playback rate
+    theme_rate_control.value.setLastValue(1 + level * 0.01f);
+    
     if(gm == game_mode.START){
       next_tetromino = new Tetromino(int(random(0, 7)));
       gm = game_mode.NORMAL_MOVE;
@@ -194,12 +207,14 @@ class Board {
         while(move_down()){
           //println("going down!");
         }
-        move.rewind();
-        move.play();
+        //move.rewind();
+        //move.play();
         gm = game_mode.NORMAL_MOVE;
       }
     } else if(gm == game_mode.NORMAL_MOVE || gm == game_mode.MOVE_FASTER){
-      if (frameCount % (gm == game_mode.MOVE_FASTER ? FRAME_INTERVAL / 6 : FRAME_INTERVAL) == 0) {
+      
+      int frame_interval = FRAME_INTERVAL - 2 * level;
+      if (frameCount % (gm == game_mode.MOVE_FASTER ? frame_interval / 6 : frame_interval) == 0) {
         if (active_tetromino == null) {
           // Create new tetromino randomly
           active_tetromino = next_tetromino;
@@ -218,8 +233,8 @@ class Board {
             }
           }
         } else if(move_down()){
-          move.rewind();
-          move.play();
+          //move.rewind();
+          //move.play();
           
         }
         else {
@@ -287,6 +302,11 @@ class Board {
     textFont(score_font);
     textAlign(RIGHT, RIGHT);
     text("Score: " + score, 17 * width / 18, height/6);
+    
+    // Display level
+    textFont(score_font);
+    textAlign(RIGHT, RIGHT);
+    text("Level: " + level, 17 * width / 18, height/6 + (height/6));
         
     //display next block
     textAlign(CENTER, CENTER);
