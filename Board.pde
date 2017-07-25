@@ -4,7 +4,7 @@ class Board {
   Tetromino held_tetromino;
   Tetromino next_tetromino;
   boolean hold, justSwapped;
-  game_mode gm;
+  game_mode gm; 
   int score; 
   int level;
   int totalLinesCleared;
@@ -213,7 +213,7 @@ class Board {
       }
     } else if(gm == game_mode.NORMAL_MOVE || gm == game_mode.MOVE_FASTER){
       
-      int frame_interval = FRAME_INTERVAL - 2 * level;
+      int frame_interval = FRAME_INTERVAL - level;
       if (frameCount % (gm == game_mode.MOVE_FASTER ? frame_interval / 6 : frame_interval) == 0) {
         if (active_tetromino == null) {
           // Create new tetromino randomly
