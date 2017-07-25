@@ -1,7 +1,7 @@
 class Block{
   // magenta, red, yellow, green, cyan, blue, white, BLACK
   // I piece, O piece, T piece, S piece, Z piece, J piece, L piece, no piece
-  color[] COLORS = new color[]{#E50000, #4169E1, #E5E500, #228B22, #00FFFF, #FFFFFF, #FF00FF, #000000};
+  color[] COLORS = new color[]{#93bcff, #ffda23, #9b27f9, #7dff59, #ff5151, #282bd3, #ff8e2b, #000000};
   color currentColor;
   static final int SIZE = 30;
   boolean stopped;

@@ -280,12 +280,12 @@ class Board {
     for(int i = padding; i < currentBoard.length - padding; i++) {
       for(int j = padding; j < currentBoard[i].length - padding; j++) {
         if (currentBoard[i][j] != null) {
-          stroke(250);
+          stroke(150);
           fill(currentBoard[i][j].currentColor);
           rect((j- padding) *Block.SIZE+ width/3, (i- padding)*Block.SIZE, SIZE, SIZE);
         } else{
-          stroke(250);
-          fill(155, 155, 155);
+          stroke(150);
+          fill(100, 100, 100);
           rect((j-padding)*Block.SIZE + width/3, (i - padding) * Block.SIZE, Block.SIZE, Block.SIZE);
         }
       }
