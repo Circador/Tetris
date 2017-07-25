@@ -197,7 +197,7 @@ class Board {
     level = totalLinesCleared / 10;
     
     // Update theme playback rate
-    theme_rate_control.value.setLastValue(1 + level * 0.01f);
+    theme_rate_control.value.setLastValue(1.f + level * 0.01f);
     
     if(gm == game_mode.START){
       next_tetromino = new Tetromino(int(random(0, 7)));
@@ -280,12 +280,38 @@ class Board {
     for(int i = padding; i < currentBoard.length - padding; i++) {
       for(int j = padding; j < currentBoard[i].length - padding; j++) {
         if (currentBoard[i][j] != null) {
-          stroke(150);
+          stroke(50);
           fill(currentBoard[i][j].currentColor);
           rect((j- padding) *Block.SIZE+ width/3, (i- padding)*Block.SIZE, SIZE, SIZE);
+          
+          // Draw the shadowing effect
+          // Enter HSB color mode
+          float hu, sa, br;
+          hu = hue(currentBoard[i][j].currentColor);
+          sa = saturation(currentBoard[i][j].currentColor);
+          br = brightness(currentBoard[i][j].currentColor);
+          colorMode(HSB, 255);
+          
+          int x = (j- padding) *Block.SIZE+ width/3;
+          int y = (i- padding)*Block.SIZE;
+          
+          br -= 30;
+          stroke(color(hu, sa, br));
+          strokeWeight(3);
+          line(x + 2, y + 2, x + Block.SIZE - 2, y + 2);
+          line(x + 2, y + 2, x + 2, y + Block.SIZE - 2);
+          
+          // Return to colorMode RGB
+          colorMode(RGB, 255);
+          
+          // Reset strokeWeight
+          strokeWeight(1);
+          noStroke();
+          
+          // End shadow effects
         } else{
-          stroke(150);
-          fill(100, 100, 100);
+          stroke(50);
+          fill(70, 70, 70);
           rect((j-padding)*Block.SIZE + width/3, (i - padding) * Block.SIZE, Block.SIZE, Block.SIZE);
         }
       }
@@ -318,6 +344,7 @@ class Board {
       for(int i = 0; i < next_tetromino.rotation_space_size; i++){
         for(int j = 0; j < next_tetromino.rotation_space_size; j++){
           if(next_tetromino.blocks[i][j] != null){
+            stroke(0);
             fill(next_tetromino.blocks[i][j].currentColor);
             rect(14*width/18 + j*Block.SIZE, 3*height/6 + i*Block.SIZE + Block.SIZE, Block.SIZE, Block.SIZE);
           }
@@ -335,6 +362,7 @@ class Board {
       for(int i = 0; i < held_tetromino.rotation_space_size; i++){
         for(int j = 0; j < held_tetromino.rotation_space_size; j++){
           if(held_tetromino.blocks[i][j] != null){
+            stroke(0);
             fill(held_tetromino.blocks[i][j].currentColor);
             rect(14*width/18 + j*Block.SIZE, 14*height/18 + i*Block.SIZE + Block.SIZE, Block.SIZE, Block.SIZE);
           }

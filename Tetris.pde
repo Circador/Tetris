@@ -67,6 +67,8 @@ void setup() {
   title_font = createFont("arcade_font.ttf", 36);
   score_font = createFont("arcade_font.ttf", 24);
   board = new Board();
+  
+  colorMode(RGB, 255);
 }
 
 void draw() {
