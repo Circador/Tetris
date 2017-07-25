@@ -85,7 +85,6 @@ void setup() {
   select = minim.loadFile("freeze.wav");
   title_font = createFont("arcade_font.ttf", 36);
   score_font = createFont("arcade_font.ttf", 24);
-  board = new Board();
   main_menu = new MainMenu(title_font, 30, 20, move, select);
   pause_menu = new PauseMenu(title_font, 30, 20, move, select);
   main_menu_theme.loop();
@@ -168,22 +167,24 @@ void keyPressed() {
 }
 
 void keyReleased() {
-  if (keyCode == DOWN) {
-    board.gm = game_mode.NORMAL_MOVE;
-  }
-  if (keyCode == CONTROL){
-    if(!board.hold && board.active_tetromino != null){
-      board.held_tetromino = board.active_tetromino;
-      board.active_tetromino = null;
-      board.hold = true;
-      board.justSwapped = true;
-      board.reset_indices();
-    } else if(board.hold && !board.justSwapped){
-      Tetromino temp = board.held_tetromino;
-      board.held_tetromino = board.active_tetromino;
-      board.active_tetromino = temp;
-      board.justSwapped = true;
-      board.reset_indices();
+  if (cs == current_screen.BOARD) {
+    if (keyCode == DOWN) {
+      board.gm = game_mode.NORMAL_MOVE;
+    }
+    if (keyCode == CONTROL){
+      if(!board.hold && board.active_tetromino != null){
+        board.held_tetromino = board.active_tetromino;
+        board.active_tetromino = null;
+        board.hold = true;
+        board.justSwapped = true;
+        board.reset_indices();
+      } else if(board.hold && !board.justSwapped){
+        Tetromino temp = board.held_tetromino;
+        board.held_tetromino = board.active_tetromino;
+        board.active_tetromino = temp;
+        board.justSwapped = true;
+        board.reset_indices();
+      }
     }
   }
 }
