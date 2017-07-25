@@ -174,12 +174,15 @@ class Board {
       score += 800;
       tetris.rewind();
       tetris.play();
+      popups.add(new TextPopup("TETRIS! +800", 25));
     } else if(linesRemoved > 0) {
       println(linesRemoved);
       score = score + linesRemoved * 100;
       line_clear.rewind();
       line_clear.play();
-    }
+      
+      popups.add(new TextPopup("+" + new Integer(linesRemoved * 100).toString(), 25));
+    } //<>//
     
     // Add number of lines cleared to total
     totalLinesCleared += linesRemoved; //<>//

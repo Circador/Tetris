@@ -37,6 +37,7 @@ enum current_screen {
 Board board;
 MainMenu main_menu;
 PauseMenu pause_menu;
+ArrayList<TextPopup> popups;
 
 PFont title_font;
 PFont score_font;
@@ -64,7 +65,8 @@ boolean paused = false;
 void setup() {
   size(900, 720);
   frameRate(60);
-  
+  colorMode(RGB, 255);
+    
   cs = current_screen.MAIN_MENU;
   
   minim = new Minim(this);
@@ -86,10 +88,8 @@ void setup() {
   board = new Board();
   main_menu = new MainMenu(title_font, 30, 20, move, select);
   pause_menu = new PauseMenu(title_font, 30, 20, move, select);
-  
   main_menu_theme.loop();
-  
-  colorMode(RGB, 255);
+  popups = new ArrayList<TextPopup>();
 }
 
 void draw() {
@@ -106,6 +106,13 @@ void draw() {
     board.update_board();
     board.update_indices();
     board.display();
+    for (int i = 0; i < popups.size(); i++) { 
+      popups.get(i).display();
+      if (popups.get(i).alpha <= 0) {
+        popups.remove(popups.get(i));
+        i--;
+      }
+    }
   }
 }
 
