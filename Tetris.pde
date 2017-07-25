@@ -36,20 +36,26 @@ enum current_screen {
 
 Board board;
 MainMenu main_menu;
+PauseMenu pause_menu;
 
 PFont title_font;
 PFont score_font;
 Minim minim;
-//AudioPlayer theme;
+// Theme music
 FilePlayer theme;
 TickRate theme_rate_control;
 AudioOutput out;
+AudioPlayer main_menu_theme;
 // clearing sounds
 AudioPlayer tetris;
 AudioPlayer line_clear;
 // movement sounds
 AudioPlayer move;
 AudioPlayer instant_place;
+
+// Main menu sounds
+AudioPlayer select;
+
   
 current_screen cs;
 
@@ -66,18 +72,22 @@ void setup() {
   out = minim.getLineOut();
   theme_rate_control = new TickRate(1.f);
   theme.patch(theme_rate_control).patch(out);
-  theme.loop();
   // clearing sounds
   tetris = minim.loadFile("tetris.wav");
   line_clear = minim.loadFile("lineclear.wav");
   // movement sounds
   move = minim.loadFile("move.wav");
   instant_place = minim.loadFile("instantplace.wav");
-  
+  main_menu_theme = minim.loadFile("mainmenu.wav");
+  // Main menu sounds
+  select = minim.loadFile("freeze.wav");
   title_font = createFont("arcade_font.ttf", 36);
   score_font = createFont("arcade_font.ttf", 24);
   board = new Board();
-  main_menu = new MainMenu(title_font, 30, 20);
+  main_menu = new MainMenu(title_font, 30, 20, move, select);
+  pause_menu = new PauseMenu(title_font, 30, 20, move, select);
+  
+  main_menu_theme.loop();
   
   colorMode(RGB, 255);
 }
@@ -86,6 +96,11 @@ void draw() {
   background(0);
   if (cs == current_screen.MAIN_MENU) {
     main_menu.display();
+  }
+  else if (cs == current_screen.PAUSE_MENU) {
+    board.display();
+    pause_menu.display();
+    // Still display the board, but faded in the background
   }
   else if (cs == current_screen.BOARD && !paused) {
     board.update_board();
@@ -100,7 +115,7 @@ void keyPressed() {
   case MAIN_MENU:
     if (keyCode == UP) main_menu.arrowKeyUpEvent();
     if (keyCode == DOWN) main_menu.arrowKeyDownEvent();
-    if (keyCode == ENTER) main_menu.enterEvent();
+    if (keyCode == ENTER) { main_menu_theme.pause(); main_menu.enterEvent(); }
     break;
     
   case BOARD:
@@ -123,13 +138,24 @@ void keyPressed() {
       }
     }
     if (key == 'p')  {
+      cs = current_screen.PAUSE_MENU;
       board.gm = game_mode.GAME_OVER;
+      pause_menu.reset();
+      theme.pause(); 
+      main_menu_theme.rewind(); 
+      main_menu_theme.loop();
     }
     if (keyCode == ' '){
       board.gm = game_mode.SKIP_DOWN;
     }
     break;
   case PAUSE_MENU:
+    if (keyCode == UP) pause_menu.arrowKeyUpEvent();
+    if (keyCode == DOWN) pause_menu.arrowKeyDownEvent();
+    if (keyCode == ENTER) { 
+      main_menu_theme.pause();
+      pause_menu.enterEvent(); 
+    }
     break;
   }
 }

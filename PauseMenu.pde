@@ -1,7 +1,8 @@
-class MainMenu {
+class PauseMenu {
+  // Almost the same as the MainMenu class
   PFont font;
   int selectedIndex;
-  String[] options = new String[] { "Play", "Hi Scores", "Options", "Exit" };
+  String[] options = new String[] { "Resume", "Hi Scores", "Options", "Quit" };
   int fontSize;
   int titleFontSize;
   boolean selected;
@@ -13,7 +14,7 @@ class MainMenu {
   boolean filled;
   int alpha;
   
-  MainMenu(PFont font, int titleFontSize, int fontSize, AudioPlayer moveSound, AudioPlayer selectSound) {
+  PauseMenu(PFont font, int titleFontSize, int fontSize, AudioPlayer moveSound, AudioPlayer selectSound) {
     this.font = font;
     selectedIndex = 0;
     selected = false;
@@ -57,6 +58,8 @@ class MainMenu {
   }
   
   void display() {
+    fill(0, 100);
+    rect(0, 0, width, height);
     if (selected) {
       if (alpha <= 0) {
         execute(); 
@@ -65,15 +68,6 @@ class MainMenu {
       if (frameCount % FLASH_INTERVAL == 0) {
          filled = !filled;
       }
-      
-      //display the score
-      textAlign(CENTER, CENTER);
-      fill(255, alpha);
-      stroke(155, 155, 155);
-      textFont(title_font);
-      textSize(titleFontSize);
-      text("TETRIS", width / 2, height / 4);
-      noStroke();
       
       // Display the menu items
       for (int i = 0; i < options.length; i++) {
@@ -93,15 +87,6 @@ class MainMenu {
       alpha -= 5;
     }
     else {
-      //display the score
-      textAlign(CENTER, CENTER);
-      fill(255);
-      stroke(155, 155, 155);
-      textFont(title_font);
-      textSize(titleFontSize);
-      text("TETRIS", width / 2, height / 4);
-      noStroke();
-      
       // Display the menu items
       for (int i = 0; i < options.length; i++) {
         textAlign(CENTER, CENTER);
@@ -118,17 +103,17 @@ class MainMenu {
   
   void execute() {
     switch (selectedIndex) {
-      case 0: play(); break;
+      case 0: resume(); break;
       case 1: hiScores(); break;
       case 2: options(); break;
-      case 3: exit(); break;
+      case 3: quit(); break;
     }
   }
   
   
-  void play() {
+  void resume() {
     cs = current_screen.BOARD;
-    theme.rewind();
+    board.gm = game_mode.NORMAL_MOVE;
     theme.loop();
   }
   
@@ -139,6 +124,14 @@ class MainMenu {
   void options() {
     
   }
+  
+  void quit() {
+    main_menu.reset();
+    main_menu_theme.rewind();
+    main_menu_theme.loop();
+    cs = current_screen.MAIN_MENU;
+  }
+  
   void reset() {
     selected = false;
     filled = false;
