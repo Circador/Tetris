@@ -1,7 +1,7 @@
 class MainMenu {
   PFont font;
   int selectedIndex;
-  String[] options = new String[] { "Play", "Hi Scores", "Options", "Exit" };
+  String[] options = new String[] { "Play", "Stats", "Options", "Exit" };
   int fontSize;
   int titleFontSize;
   boolean selected;

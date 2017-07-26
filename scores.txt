@@ -1,10 +1,10 @@
-I_tetromino 5
-O_tetromino 11
-T_tetromino 5
-S_tetromino 7
-Z_tetromino 5
-J_tetromino 8
-L_tetromino 8
+I_tetromino 9
+O_tetromino 18
+T_tetromino 14
+S_tetromino 12
+Z_tetromino 9
+J_tetromino 12
+L_tetromino 13
 lines_total 4
 high_score 400
 max_lines_cleared 4

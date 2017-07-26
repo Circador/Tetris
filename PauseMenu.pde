@@ -2,7 +2,7 @@ class PauseMenu {
   // Almost the same as the MainMenu class
   PFont font;
   int selectedIndex;
-  String[] options = new String[] { "Resume", "Restart", "Hi Scores", "Options", "Quit" };
+  String[] options = new String[] { "Resume", "Restart", "Stats", "Options", "Quit" };
   int fontSize;
   int titleFontSize;
   boolean selected;
