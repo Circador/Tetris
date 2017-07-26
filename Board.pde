@@ -192,10 +192,10 @@ class Board {
       line_clear.play();
       
       popups.add(new TextPopup("+" + new Integer(linesRemoved * 100).toString(), 25));
-    } //<>//
+    } //<>// //<>//
     
     // Add number of lines cleared to total
-    totalLinesCleared += linesRemoved; //<>//
+    totalLinesCleared += linesRemoved; //<>// //<>//
     stats[7] += linesRemoved;
   }
   /**
@@ -326,16 +326,17 @@ class Board {
           while(!collision(temp_x, temp_y+1, active_tetromino)){
             temp_y++;
           }
+          tint(255, 10);
           // now draw the shadow
           for(int row = 0; row < active_tetromino.rotation_space_size; row++){
              for(int col = 0; col < active_tetromino.rotation_space_size; col++){
                if(active_tetromino.blocks[row][col] != null){
-                 tint(255, 10);
+
                  active_tetromino.blocks[row][col].display(row +temp_y - padding, col + temp_x - padding, width/3, 0);
-                 noTint();
                }
             }
           } 
+          noTint();
         }
       }
     }

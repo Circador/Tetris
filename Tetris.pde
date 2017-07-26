@@ -165,7 +165,9 @@ void keyPressed() {
       main_menu_theme.loop();
     }
     if (keyCode == ' '){
-      board.gm = game_mode.SKIP_DOWN;
+      if (board.active_tetromino != null) {
+        board.gm = game_mode.SKIP_DOWN;
+      }
     }
     break;
   case PAUSE_MENU:
