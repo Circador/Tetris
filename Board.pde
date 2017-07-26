@@ -36,6 +36,18 @@ class Board {
     }
   }  
   
+  void reset_board() {
+    currentBoard = new Block[padding + height/Block.SIZE + padding][padding + width/Block.SIZE/3 + padding];
+    score = 0;
+    gm = game_mode.NORMAL_MOVE;
+    hold = false;
+    justSwapped = false;
+    // set up the statistics
+    score = 0;
+    totalLinesCleared = 0;
+    level = 0;
+  }
+  
   // Returns whether rotation in CW direction succeeded or not
   void rotateCW() {    
     // check to make sure there is something to rotate

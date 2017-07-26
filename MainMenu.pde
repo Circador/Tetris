@@ -136,7 +136,7 @@ class MainMenu {
     cs = current_screen.BOARD;
     theme.rewind();
     theme.loop();
-    board = new Board();
+    board.reset_board();
   }
   
   void hiScores()  {

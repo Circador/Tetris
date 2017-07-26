@@ -120,7 +120,7 @@ class PauseMenu {
   
   void restart() {
     cs = current_screen.BOARD;
-    board = new Board();
+    board.reset_board();
     theme.rewind();
     theme.loop();
   }
