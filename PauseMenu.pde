@@ -2,7 +2,7 @@ class PauseMenu {
   // Almost the same as the MainMenu class
   PFont font;
   int selectedIndex;
-  String[] options = new String[] { "Resume", "Hi Scores", "Options", "Quit" };
+  String[] options = new String[] { "Resume", "Restart", "Hi Scores", "Options", "Quit" };
   int fontSize;
   int titleFontSize;
   boolean selected;
@@ -104,9 +104,10 @@ class PauseMenu {
   void execute() {
     switch (selectedIndex) {
       case 0: resume(); break;
-      case 1: hiScores(); break;
-      case 2: options(); break;
-      case 3: quit(); break;
+      case 1: restart(); break;
+      case 2: hiScores(); break;
+      case 3: options(); break;
+      case 4: quit(); break;
     }
   }
   
@@ -114,6 +115,13 @@ class PauseMenu {
   void resume() {
     cs = current_screen.BOARD;
     board.gm = game_mode.NORMAL_MOVE;
+    theme.loop();
+  }
+  
+  void restart() {
+    cs = current_screen.BOARD;
+    board = new Board();
+    theme.rewind();
     theme.loop();
   }
   

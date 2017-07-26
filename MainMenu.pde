@@ -8,6 +8,9 @@ class MainMenu {
   
   AudioPlayer moveSound, selectSound;
   
+  // Title flash variables
+  boolean titleFlash;
+  
   // Variables used for flashing animation when item is selected
   int FLASH_INTERVAL = 10;
   boolean filled;
@@ -57,6 +60,9 @@ class MainMenu {
   }
   
   void display() {
+    if (frameCount % FLASH_INTERVAL == 0) {
+      titleFlash = !titleFlash; 
+    }
     if (selected) {
       if (alpha <= 0) {
         execute(); 
@@ -95,7 +101,7 @@ class MainMenu {
     else {
       //display the score
       textAlign(CENTER, CENTER);
-      fill(255);
+      fill(titleFlash ? 255 : 155 );
       stroke(155, 155, 155);
       textFont(title_font);
       textSize(titleFontSize);
@@ -130,6 +136,7 @@ class MainMenu {
     cs = current_screen.BOARD;
     theme.rewind();
     theme.loop();
+    board = new Board();
   }
   
   void hiScores()  {
