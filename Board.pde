@@ -180,10 +180,10 @@ class Board {
   */
   void addScore(int linesRemoved){
     if (linesRemoved == 4){
-      println(linesRemoved);
+      println(linesRemoved); //<>//
       score += 800;
       tetris.rewind();
-      tetris.play();
+      tetris.play(); //<>//
       popups.add(new TextPopup("TETRIS! +800", 25));
     } else if(linesRemoved > 0) {
       println(linesRemoved);
@@ -317,7 +317,7 @@ class Board {
         } else {
           PImage no_block = block_images[7];
           no_block.resize(Block.SIZE, Block.SIZE);
-          image(no_block, (j- padding)*Block.SIZE + width/3, i * Block.SIZE);
+          image(no_block, (j- padding)*Block.SIZE + width/3, (i- padding) * Block.SIZE);
         }
         // draw block shadow
         if(active_tetromino != null){
@@ -330,7 +330,7 @@ class Board {
           for(int row = 0; row < active_tetromino.rotation_space_size; row++){
              for(int col = 0; col < active_tetromino.rotation_space_size; col++){
                if(active_tetromino.blocks[row][col] != null){
-                 tint(255, 5);
+                 tint(255, 10);
                  active_tetromino.blocks[row][col].display(row +temp_y - padding, col + temp_x - padding, width/3, 0);
                  noTint();
                }

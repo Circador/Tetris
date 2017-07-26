@@ -101,7 +101,7 @@ void setup() {
   String[] stats = loadStrings("scores.txt");
   board = new Board(stats);
   block_images = new PImage[]{loadImage("I_block.png"), loadImage("O_block.png"), loadImage("T_block.png"), 
-loadImage("S_block.png"), loadImage("Z_block.png"), loadImage("J_block.png"), loadImage("L_block.png"), loadImage("no_block.png")};
+  loadImage("S_block.png"), loadImage("Z_block.png"), loadImage("J_block.png"), loadImage("L_block.png"), loadImage("no_block.png")};
 }
 
 void draw() {
