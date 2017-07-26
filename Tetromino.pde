@@ -53,7 +53,8 @@ class Tetromino {
                                     {2, -1}, {1, 0}, {0, 1}, {-1, 2},
                                     {1, -2}, {0, -1}, {-1, 0}, {-2, 1},
                                     {0, -3}, {-1, -2}, {-2, -1}, {-3, 0}};
-                                    
+
+  
   int[][][] shifts = new int[][][]{two_shifts, three_shifts, four_shifts};
   int type;
   int position;
@@ -79,7 +80,7 @@ class Tetromino {
     for(int i = 0; i < blocks.length; i++){
       for(int j = 0; j < blocks[i].length; j++){
         if(tetromino[type][i][j]){
-          blocks[i][j] = new Block(type);
+          blocks[i][j] = new Block(block_images[type]);
         }
       }
     }
@@ -93,7 +94,7 @@ class Tetromino {
     for(int i = 0; i < blocks.length; i++){
       for(int j = 0; j < blocks[i].length; j++){
         if(current_tetromino.blocks[i][j] != null){
-          blocks[i][j] = new Block(type);
+          blocks[i][j] = new Block(block_images[type]);
         }
       }
     }

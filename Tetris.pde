@@ -33,14 +33,18 @@ enum current_screen {
   BOARD,
   PAUSE_MENU;
 }
-
+//aesthetics
 Board board;
 MainMenu main_menu;
 PauseMenu pause_menu;
 ArrayList<TextPopup> popups;
+PImage[] block_images;
 
+//fonts
 PFont title_font;
 PFont score_font;
+PFont detail_font;
+
 Minim minim;
 // Theme music
 FilePlayer theme;
@@ -85,11 +89,19 @@ void setup() {
   select = minim.loadFile("freeze.wav");
   title_font = createFont("arcade_font.ttf", 36);
   score_font = createFont("arcade_font.ttf", 24);
-  board = new Board();
+  detail_font = createFont("arcade_font.ttf", 16);
+
   main_menu = new MainMenu(title_font, 30, 20, move, select);
   pause_menu = new PauseMenu(title_font, 30, 20, move, select);
   main_menu_theme.loop();
   popups = new ArrayList<TextPopup>();
+  
+
+  // load data into board
+  String[] stats = loadStrings("scores.txt");
+  board = new Board(stats);
+  block_images = new PImage[]{loadImage("I_block.png"), loadImage("O_block.png"), loadImage("T_block.png"), 
+loadImage("S_block.png"), loadImage("Z_block.png"), loadImage("J_block.png"), loadImage("L_block.png"), loadImage("no_block.png")};
 }
 
 void draw() {

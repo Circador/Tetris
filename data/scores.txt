@@ -1,8 +1,0 @@
-I 0
-O 0
-T 0
-S 0
-Z 0
-J 0
-L 0
-high_score 0

@@ -1,4 +1,3 @@
-
 class TextPopup {
   String text;
   int fontSize;
@@ -15,8 +14,6 @@ class TextPopup {
     this.fontSize = fontSize;
     alpha = 255;
   }
-  
-  
   
   void display() {
     if (frameCount % FLASH_INTERVAL == 0) {

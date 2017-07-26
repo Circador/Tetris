@@ -1,24 +1,39 @@
 class Board {
+  // display
   Block[][] currentBoard;
+  int padding = 2;
   Tetromino active_tetromino; // There should only be one active (mobile) tetromino at any given moment
   Tetromino held_tetromino;
   Tetromino next_tetromino;
+  // game mode variables
   boolean hold, justSwapped;
-  game_mode gm; 
+  game_mode gm;
+  boolean paused;
+  int tetromino_x, tetromino_y;
+  
+  // stats variables
+  int[] stats;
   int score; 
   int level;
   int totalLinesCleared;
-  int tetromino_x, tetromino_y;
+  String[] saved_stats;
   
-  boolean paused;
-  int padding = 2;
-  
-  Board() {
+  Board(String[] saved_stats) {
     currentBoard = new Block[padding + height/Block.SIZE + padding][padding + width/Block.SIZE/3 + padding];
     score = 0;
     gm = game_mode.NORMAL_MOVE;
     hold = false;
     justSwapped = false;
+    // set up the statistics
+    score = 0;
+    totalLinesCleared = 0;
+    level = 0;
+    this.stats = new int[saved_stats.length];
+    this.saved_stats = saved_stats;
+    for(int i = 0; i < stats.length; i++){
+      String[] split_word = split(saved_stats[i], " ");
+      this.stats[i] = int(split_word[1]); // grabs the number associated with each statistic
+    }
   }  
   
   // Returns whether rotation in CW direction succeeded or not
@@ -47,16 +62,7 @@ class Board {
   }
   
   // Attempts to move down, returns false if failed
-  boolean move_down() {
-    /*
-     * Algorithm Notes:
-     *   Iterate bottom-up to eliminate issues with swapping a block of the tetromino with another block of the same tetromino.
-     *   Use attempt_swap to detect if move_down should fail
-     *
-     * TODO: Check if the block will be out of bounds when moved down (check if it is at the bottom).
-     *       If so, abort
-     */
-    
+  boolean move_down() {    
     if(collision(tetromino_x, tetromino_y + 1, active_tetromino)){
       //println("broken");
       return false;
@@ -66,8 +72,6 @@ class Board {
   }
   
   boolean move_left() {
-    //if (frozen) return false;
-    
     if(collision(tetromino_x-1, tetromino_y, active_tetromino)){
       return false;
     }
@@ -76,8 +80,6 @@ class Board {
   }
   
   boolean move_right() {
-    // if (frozen) return false;
-    
     if(collision(tetromino_x+1, tetromino_y, active_tetromino)){
       return false;
     }
@@ -108,7 +110,7 @@ class Board {
                 return true;
               }
             } else{ // if the coordinate of a block swapped is invalid, then return true
-              println("invalid swap");
+              // println("invalid swap");
               return true;
             }
           }
@@ -143,10 +145,6 @@ class Board {
         // shift each line down from the bottom to the top, if it is 
         // if it shifts it should keep shifting?
         if(lineIntact){
-          //for(int rowShiftIndex = row; rowShiftIndex < currentBoard.length - padding - 1; rowShiftIndex++){
-            // moves the above row to be in the position of the current row
-          //  currentBoard[rowShiftIndex] = currentBoard[rowShiftIndex - 1];
-          //}
           shiftAllRowsAbove(row);
           linesRemoved++;
         }
@@ -186,6 +184,7 @@ class Board {
     
     // Add number of lines cleared to total
     totalLinesCleared += linesRemoved; //<>//
+    stats[7] += linesRemoved;
   }
   /**
      Helper function that returns the score.
@@ -203,7 +202,9 @@ class Board {
     theme_rate_control.value.setLastValue(1.f + level * 0.01f);
     
     if(gm == game_mode.START){
-      next_tetromino = new Tetromino(int(random(0, 7)));
+      int next_type = int(random(0, 7));
+      stats[next_type]++;
+      next_tetromino = new Tetromino(next_type);
       gm = game_mode.NORMAL_MOVE;
     } else if(gm == game_mode.SKIP_DOWN){
       if(active_tetromino != null){
@@ -221,7 +222,9 @@ class Board {
         if (active_tetromino == null) {
           // Create new tetromino randomly
           active_tetromino = next_tetromino;
-          next_tetromino = new Tetromino(int(random(0, 7)));
+          int next_type = int(random(0, 7));
+          stats[next_type]++;
+          next_tetromino = new Tetromino(next_type);
           
           // allow person to hold block again
           justSwapped = false;
@@ -233,6 +236,8 @@ class Board {
             tetromino_y--;
             if(tetromino_y < padding){
               gm = game_mode.GAME_OVER;
+              println("GAME OVER!");
+              break;
             }
           }
         } else if(move_down()){
@@ -249,7 +254,20 @@ class Board {
           checkLine();
         }
       }      
-    } 
+    } else if (gm == game_mode.GAME_OVER){
+      // write stats back to file 
+      stats[9] = Math.max(stats[9], totalLinesCleared);
+      stats[8] = Math.max(stats[8], score);
+      
+      // write everything back to file
+      for(int i = 0; i < stats.length; i++){
+        String new_string = split(saved_stats[i], " ")[0] + " " + stats[i];
+        saved_stats[i] = new_string;
+        println(saved_stats[i]);
+      }
+      saveStrings("scores.txt", saved_stats);
+      exit();
+    }
   }
   // reset indices back to the original starting location, so block spawns on top
   void reset_indices(){
@@ -283,43 +301,33 @@ class Board {
     for(int i = padding; i < currentBoard.length - padding; i++) {
       for(int j = padding; j < currentBoard[i].length - padding; j++) {
         if (currentBoard[i][j] != null) {
-          stroke(50);
-          fill(currentBoard[i][j].currentColor);
-          rect((j- padding) *Block.SIZE+ width/3, (i- padding)*Block.SIZE, SIZE, SIZE);
-          
-          // Draw the shadowing effect
-          // Enter HSB color mode
-          float hu, sa, br;
-          hu = hue(currentBoard[i][j].currentColor);
-          sa = saturation(currentBoard[i][j].currentColor);
-          br = brightness(currentBoard[i][j].currentColor);
-          colorMode(HSB, 255);
-          
-          int x = (j- padding) *Block.SIZE+ width/3;
-          int y = (i- padding)*Block.SIZE;
-          
-          br -= 30;
-          stroke(color(hu, sa, br));
-          strokeWeight(3);
-          line(x + 2, y + 2, x + Block.SIZE - 2, y + 2);
-          line(x + 2, y + 2, x + 2, y + Block.SIZE - 2);
-          
-          // Return to colorMode RGB
-          colorMode(RGB, 255);
-          
-          // Reset strokeWeight
-          strokeWeight(1);
-          noStroke();
-          
-          // End shadow effects
-        } else{
-          stroke(50);
-          fill(70, 70, 70);
-          rect((j-padding)*Block.SIZE + width/3, (i - padding) * Block.SIZE, Block.SIZE, Block.SIZE);
+          currentBoard[i][j].display(i - padding, j - padding, width/3, 0); 
+        } else {
+          PImage no_block = block_images[7];
+          no_block.resize(Block.SIZE, Block.SIZE);
+          image(no_block, (j- padding)*Block.SIZE + width/3, i * Block.SIZE);
+        }
+        // draw block shadow
+        if(active_tetromino != null){
+          int temp_y = tetromino_y;
+          int temp_x = tetromino_x;
+          while(!collision(temp_x, temp_y+1, active_tetromino)){
+            temp_y++;
+          }
+          // now draw the shadow
+          for(int row = 0; row < active_tetromino.rotation_space_size; row++){
+             for(int col = 0; col < active_tetromino.rotation_space_size; col++){
+               if(active_tetromino.blocks[row][col] != null){
+                 tint(255, 5);
+                 active_tetromino.blocks[row][col].display(row +temp_y - padding, col + temp_x - padding, width/3, 0);
+                 noTint();
+               }
+            }
+          } 
         }
       }
     }
-    
+    // RIGHT SIDE OF SCREEN
     //display the score
     textAlign(CENTER, CENTER);
     fill(255);
@@ -328,14 +336,47 @@ class Board {
     text("TETRIS", 3*width/18, height/6);
     noStroke();
     
+    // display high score
+    textAlign(CENTER, CENTER);
+    fill(255);
+    stroke(155, 155, 155);
+    textFont(detail_font);
+    text("HI SCORE: " + stats[8], 3 * width/18, 3 * height /12);
+    
+    // display lines cleared for each block
+    // I, O, T, S, Z, J, L
+    // 4, 5, 6, 7, 8, 9, 10
+    textAlign(CENTER, CENTER);
+    fill(255);
+    stroke(155, 155, 155);
+    textFont(detail_font);
+    for(int i = 0; i < 7; i++){
+      text(split(saved_stats[i], " ")[0] + ": " +stats[i], 3 * width/18, (4+i) * height / 12);
+    }
+    
+    
+    // LEFT SIDE OF SCREEN
     textFont(score_font);
+    textAlign(LEFT, LEFT);
+    text("Score", 13 *width / 18, 2 * height/12);
     textAlign(RIGHT, RIGHT);
-    text("Score: " + score, 17 * width / 18, height/6);
+    text( score, 17.5 * width / 18, 2 * height/12);
     
     // Display level
     textFont(score_font);
+    textAlign(LEFT, LEFT);
+    text("Level", 13 *width / 18, 3 * height/12);
     textAlign(RIGHT, RIGHT);
-    text("Level: " + level, 17 * width / 18, height/6 + (height/6));
+    text(level, 17.5 * width / 18, 3 * height/12);
+    
+    // Display lines:
+    textFont(score_font);
+    textAlign(LEFT, LEFT);
+    text("Lines", 13 * width/18, 4 * height /12);
+    text("Left", 13 * width/18, 4.5 * height /12);
+
+    textAlign(RIGHT, RIGHT);
+    text(((level+1) * 10 - totalLinesCleared), 17.5 * width/18, 4.25 * height/12);
         
     //display next block
     textAlign(CENTER, CENTER);
@@ -347,9 +388,7 @@ class Board {
       for(int i = 0; i < next_tetromino.rotation_space_size; i++){
         for(int j = 0; j < next_tetromino.rotation_space_size; j++){
           if(next_tetromino.blocks[i][j] != null){
-            stroke(0);
-            fill(next_tetromino.blocks[i][j].currentColor);
-            rect(14*width/18 + j*Block.SIZE, 3*height/6 + i*Block.SIZE + Block.SIZE, Block.SIZE, Block.SIZE);
+            next_tetromino.blocks[i][j].display(i, j, 14 *width / 18, 3*height/6 + Block.SIZE);
           }
         }
       }
@@ -365,9 +404,7 @@ class Board {
       for(int i = 0; i < held_tetromino.rotation_space_size; i++){
         for(int j = 0; j < held_tetromino.rotation_space_size; j++){
           if(held_tetromino.blocks[i][j] != null){
-            stroke(0);
-            fill(held_tetromino.blocks[i][j].currentColor);
-            rect(14*width/18 + j*Block.SIZE, 14*height/18 + i*Block.SIZE + Block.SIZE, Block.SIZE, Block.SIZE);
+            held_tetromino.blocks[i][j].display(i, j, 14 * width / 18, 14*height/18 + Block.SIZE);
           }
         }
       }
